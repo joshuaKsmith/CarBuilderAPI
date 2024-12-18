@@ -24,7 +24,15 @@ List<Interior> interiors = new List<Interior>
 };
 List<Order> orders = new List<Order>
 {
-
+    new Order()
+    {
+        Id = 1,
+        Timestamp = DateTime.Today,
+        WheelsId = 1,
+        TechnologyId = 1,
+        PaintColorId = 1,
+        InteriorId = 1
+    }
 };
 List<PaintColor> paintColors = new List<PaintColor>
 {
@@ -125,12 +133,65 @@ app.MapGet("/technologies", () =>
 });
 
 // endpoint for fetching interiors
-
+app.MapGet("/interiors", () => 
+{
+    return interiors.Select(i => new InteriorDTO
+    {
+        Id = i.Id,
+        Price = i.Price,
+        Material = i.Material
+    });
+});
 
 // endpoint for fetching paintcolors
+app.MapGet("/paintcolors", () => 
+{
+    return paintColors.Select(pc => new PaintColorDTO
+    {
+        Id = pc.Id,
+        Price = pc.Price,
+        Color = pc.Color
+    });
+});
 
+// endpoint for fetching orders
+app.MapGet("/orders", () => 
+{
+    return orders.Select(o => new OrderDTO
+    {
+        Id = o.Id,
+        Timestamp = o.Timestamp,
+        WheelsId = o.WheelsId,
+        Wheels = new WheelsDTO
+        {
+            Id = wheels[o.WheelsId - 1].Id,
+            Price = wheels[o.WheelsId - 1].Price,
+            Style = wheels[o.WheelsId - 1].Style
+        },
+        TechnologyId = o.TechnologyId,
+        Technology = new TechnologyDTO
+        {
+            Id = technologies[o.TechnologyId - 1].Id,
+            Price = technologies[o.TechnologyId - 1].Price,
+            Package = technologies[o.TechnologyId - 1].Package
 
-
+        },
+        PaintColorId = o.PaintColorId,
+        PaintColor = new PaintColorDTO
+        {
+            Id = paintColors[o.PaintColorId - 1].Id,
+            Price = paintColors[o.PaintColorId - 1].Price,
+            Color = paintColors[o.PaintColorId - 1].Color
+        },
+        InteriorId = o.InteriorId,
+        Interior = new InteriorDTO
+        {
+            Id = interiors[o.InteriorId - 1].Id,
+            Price = interiors[o.InteriorId - 1].Price,
+            Material = interiors[o.InteriorId - 1].Material
+        }
+    });
+});
 
 
 //////////////////////////////////////
