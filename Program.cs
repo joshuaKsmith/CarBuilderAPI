@@ -102,6 +102,33 @@ app.UseHttpsRedirection();
 //////////////////////////////////////
 
 
+// endpoint for fetching wheels
+app.MapGet("/wheels", () => 
+{
+    return wheels.Select(w => new WheelsDTO
+    {
+        Id = w.Id,
+        Price = w.Price,
+        Style = w.Style
+    });
+});
+
+// endpoint for fetching technologies
+app.MapGet("/technologies", () =>
+{
+    return technologies.Select(t => new TechnologyDTO
+    {
+        Id = t.Id,
+        Price = t.Price,
+        Package = t.Package
+    });
+});
+
+// endpoint for fetching interiors
+
+
+// endpoint for fetching paintcolors
+
 
 
 
