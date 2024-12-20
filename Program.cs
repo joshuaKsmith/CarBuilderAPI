@@ -154,6 +154,8 @@ app.MapGet("/paintcolors", () =>
     });
 });
 
+
+
 // endpoint for fetching orders
 app.MapGet("/orders", () => 
 {
@@ -192,6 +194,61 @@ app.MapGet("/orders", () =>
         }
     });
 });
+
+// endpoint to submit an order
+
+app.MapPost("/orders", (Order order) => 
+{
+    Wheels wheel = wheels.FirstOrDefault(w => w.Id == order.WheelsId);
+    Technology technology = technologies.FirstOrDefault(t => t.Id == order.TechnologyId);
+    PaintColor paintColor = paintColors.FirstOrDefault(pc => pc.Id == order.PaintColorId);
+    Interior interior = interiors.FirstOrDefault(i => i.Id == order.InteriorId);
+
+    if (wheel == null || technology == null || paintColor == null || interior == null)
+    {
+        return Results.BadRequest();
+    }
+
+    order.Id = orders.Max(o => o.Id) + 1;
+    orders.Add(order);
+
+    return Results.Created($"/orders/{order.Id}", new OrderDTO
+    {
+        Id = order.Id,
+        Timestamp = DateTime.Now,
+        WheelsId = order.Id,
+        Wheels = new WheelsDTO
+        {
+            Id = wheels[order.WheelsId - 1].Id,
+            Price = wheels[order.WheelsId - 1].Price,
+            Style = wheels[order.WheelsId - 1].Style
+        },
+        TechnologyId = order.TechnologyId,
+        Technology = new TechnologyDTO
+        {
+            Id = technologies[order.TechnologyId - 1].Id,
+            Price = technologies[order.TechnologyId - 1].Price,
+            Package = technologies[order.TechnologyId - 1].Package
+        },
+        PaintColorId = order.PaintColorId,
+        PaintColor = new PaintColorDTO
+        {
+            Id = paintColors[order.WheelsId - 1].Id,
+            Price = paintColors[order.WheelsId - 1].Price,
+            Color = paintColors[order.WheelsId - 1].Color
+        },
+        InteriorId = order.InteriorId,
+        Interior = new InteriorDTO
+        {
+            Id = interiors[order.InteriorId - 1].Id,
+            Price = interiors[order.InteriorId - 1].Price,
+            Material = interiors[order.InteriorId - 1].Material
+        }
+    });
+
+
+});
+
 
 
 //////////////////////////////////////
