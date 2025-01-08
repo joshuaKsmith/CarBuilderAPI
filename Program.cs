@@ -202,7 +202,8 @@ app.MapGet("/orders", () =>
             Id = interiors[o.InteriorId - 1].Id,
             Price = interiors[o.InteriorId - 1].Price,
             Material = interiors[o.InteriorId - 1].Material
-        }
+        },
+        TotalCost = wheels[o.WheelsId - 1].Price + technologies[o.TechnologyId - 1].Price + paintColors[o.PaintColorId - 1].Price + interiors[o.InteriorId - 1].Price
     });
 });
 
