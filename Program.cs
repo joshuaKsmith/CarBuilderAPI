@@ -255,7 +255,8 @@ app.MapPost("/orders", (Order order) =>
             Id = interiors[order.InteriorId - 1].Id,
             Price = interiors[order.InteriorId - 1].Price,
             Material = interiors[order.InteriorId - 1].Material
-        }
+        },
+        TotalCost = wheels[order.WheelsId - 1].Price + technologies[order.TechnologyId - 1].Price + paintColors[order.PaintColorId - 1].Price + interiors[order.InteriorId - 1].Price
     });
 
 
