@@ -170,40 +170,49 @@ app.MapGet("/paintcolors", () =>
 // endpoint for fetching orders
 app.MapGet("/orders", () => 
 {
-    return orders.Select(o => new OrderDTO
+    return orders.Select(o => 
     {
-        Id = o.Id,
-        Timestamp = o.Timestamp,
-        WheelsId = o.WheelsId,
-        Wheels = new WheelsDTO
-        {
-            Id = wheels[o.WheelsId - 1].Id,
-            Price = wheels[o.WheelsId - 1].Price,
-            Style = wheels[o.WheelsId - 1].Style
-        },
-        TechnologyId = o.TechnologyId,
-        Technology = new TechnologyDTO
-        {
-            Id = technologies[o.TechnologyId - 1].Id,
-            Price = technologies[o.TechnologyId - 1].Price,
-            Package = technologies[o.TechnologyId - 1].Package
+        Wheels wheel = wheels.Single(w => w.Id == o.WheelsId);
+        Technology tech = technologies.Single(t => t.Id == o.TechnologyId);
+        PaintColor paint = paintColors.Single(p => p.Id == o.PaintColorId);
+        Interior interior = interiors.Single(i => i.Id == o.InteriorId);
 
-        },
-        PaintColorId = o.PaintColorId,
-        PaintColor = new PaintColorDTO
+        return new OrderDTO
         {
-            Id = paintColors[o.PaintColorId - 1].Id,
-            Price = paintColors[o.PaintColorId - 1].Price,
-            Color = paintColors[o.PaintColorId - 1].Color
-        },
-        InteriorId = o.InteriorId,
-        Interior = new InteriorDTO
-        {
-            Id = interiors[o.InteriorId - 1].Id,
-            Price = interiors[o.InteriorId - 1].Price,
-            Material = interiors[o.InteriorId - 1].Material
-        },
-        TotalCost = wheels[o.WheelsId - 1].Price + technologies[o.TechnologyId - 1].Price + paintColors[o.PaintColorId - 1].Price + interiors[o.InteriorId - 1].Price
+            Id = o.Id,
+            Timestamp = o.Timestamp,
+            WheelsId = o.WheelsId,
+            Wheels = new WheelsDTO
+            {
+                Id = wheel.Id,
+                Price = wheel.Price,
+                Style = wheel.Style
+            },
+            TechnologyId = o.TechnologyId,
+            Technology = new TechnologyDTO
+            {
+                Id = tech.Id,
+                Price = tech.Price,
+                Package = tech.Package
+
+            },
+            PaintColorId = o.PaintColorId,
+            PaintColor = new PaintColorDTO
+            {
+                Id = paint.Id,
+                Price = paint.Price,
+                Color = paint.Color
+            },
+            InteriorId = o.InteriorId,
+            Interior = new InteriorDTO
+            {
+                Id = interior.Id,
+                Price = interior.Price,
+                Material = interior.Material
+            },
+            DateCompleted = o.DateCompleted,
+            TotalCost = wheel.Price + tech.Price + paint.Price + interior.Price
+        };
     });
 });
 
@@ -231,38 +240,51 @@ app.MapPost("/orders", (Order order) =>
         WheelsId = order.Id,
         Wheels = new WheelsDTO
         {
-            Id = wheels[order.WheelsId - 1].Id,
-            Price = wheels[order.WheelsId - 1].Price,
-            Style = wheels[order.WheelsId - 1].Style
+            Id = wheel.Id,
+            Price = wheel.Price,
+            Style = wheel.Style
         },
         TechnologyId = order.TechnologyId,
         Technology = new TechnologyDTO
         {
-            Id = technologies[order.TechnologyId - 1].Id,
-            Price = technologies[order.TechnologyId - 1].Price,
-            Package = technologies[order.TechnologyId - 1].Package
+            Id = technology.Id,
+            Price = technology.Price,
+            Package = technology.Package
         },
         PaintColorId = order.PaintColorId,
         PaintColor = new PaintColorDTO
         {
-            Id = paintColors[order.WheelsId - 1].Id,
-            Price = paintColors[order.WheelsId - 1].Price,
-            Color = paintColors[order.WheelsId - 1].Color
+            Id = paintColor.Id,
+            Price = paintColor.Price,
+            Color = paintColor.Color
         },
         InteriorId = order.InteriorId,
         Interior = new InteriorDTO
         {
-            Id = interiors[order.InteriorId - 1].Id,
-            Price = interiors[order.InteriorId - 1].Price,
-            Material = interiors[order.InteriorId - 1].Material
+            Id = interior.Id,
+            Price = interior.Price,
+            Material = interior.Material
         },
-        TotalCost = wheels[order.WheelsId - 1].Price + technologies[order.TechnologyId - 1].Price + paintColors[order.PaintColorId - 1].Price + interiors[order.InteriorId - 1].Price
+        DateCompleted = null,
+        TotalCost = wheel.Price + technology.Price + paintColor.Price + interior.Price
     });
 
 
 });
 
+app.MapPost("/orders/{id}/fulfill", (int id) => 
+{
+    int index = orders.FindIndex(o => o.Id == id);
+    
+    if (index == -1)
+    {
+        return Results.NotFound($"Order with ID {id} not found");
+    }
 
+    orders[index].DateCompleted = DateTime.Now;
+    
+    return Results.NoContent();
+});
 
 //////////////////////////////////////
 app.Run();
