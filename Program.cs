@@ -170,50 +170,52 @@ app.MapGet("/paintcolors", () =>
 // endpoint for fetching orders
 app.MapGet("/orders", () => 
 {
-    return orders.Select(o => 
-    {
-        Wheels wheel = wheels.Single(w => w.Id == o.WheelsId);
-        Technology tech = technologies.Single(t => t.Id == o.TechnologyId);
-        PaintColor paint = paintColors.Single(p => p.Id == o.PaintColorId);
-        Interior interior = interiors.Single(i => i.Id == o.InteriorId);
-
-        return new OrderDTO
+    return orders
+        .Where(o => o.DateCompleted == null)
+        .Select(o => 
         {
-            Id = o.Id,
-            Timestamp = o.Timestamp,
-            WheelsId = o.WheelsId,
-            Wheels = new WheelsDTO
-            {
-                Id = wheel.Id,
-                Price = wheel.Price,
-                Style = wheel.Style
-            },
-            TechnologyId = o.TechnologyId,
-            Technology = new TechnologyDTO
-            {
-                Id = tech.Id,
-                Price = tech.Price,
-                Package = tech.Package
+            Wheels wheel = wheels.Single(w => w.Id == o.WheelsId);
+            Technology tech = technologies.Single(t => t.Id == o.TechnologyId);
+            PaintColor paint = paintColors.Single(p => p.Id == o.PaintColorId);
+            Interior interior = interiors.Single(i => i.Id == o.InteriorId);
 
-            },
-            PaintColorId = o.PaintColorId,
-            PaintColor = new PaintColorDTO
+            return new OrderDTO
             {
-                Id = paint.Id,
-                Price = paint.Price,
-                Color = paint.Color
-            },
-            InteriorId = o.InteriorId,
-            Interior = new InteriorDTO
-            {
-                Id = interior.Id,
-                Price = interior.Price,
-                Material = interior.Material
-            },
-            DateCompleted = o.DateCompleted,
-            TotalCost = wheel.Price + tech.Price + paint.Price + interior.Price
-        };
-    });
+                Id = o.Id,
+                Timestamp = o.Timestamp,
+                WheelsId = o.WheelsId,
+                Wheels = new WheelsDTO
+                {
+                    Id = wheel.Id,
+                    Price = wheel.Price,
+                    Style = wheel.Style
+                },
+                TechnologyId = o.TechnologyId,
+                Technology = new TechnologyDTO
+                {
+                    Id = tech.Id,
+                    Price = tech.Price,
+                    Package = tech.Package
+
+                },
+                PaintColorId = o.PaintColorId,
+                PaintColor = new PaintColorDTO
+                {
+                    Id = paint.Id,
+                    Price = paint.Price,
+                    Color = paint.Color
+                },
+                InteriorId = o.InteriorId,
+                Interior = new InteriorDTO
+                {
+                    Id = interior.Id,
+                    Price = interior.Price,
+                    Material = interior.Material
+                },
+                DateCompleted = o.DateCompleted,
+                TotalCost = wheel.Price + tech.Price + paint.Price + interior.Price
+            };
+        });
 });
 
 // endpoint to submit an order
